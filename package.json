@@ -15,7 +15,7 @@
     "react-router-dom": "^6.14.1"
   },
   "bin": {
-    "create-boilerplate": "./generate-app.js"
+    "mt-boilerplate-vite-react-tw": "./generate-app.js"
   },
   "devDependencies": {
     "@types/react": "^18.2.14",
