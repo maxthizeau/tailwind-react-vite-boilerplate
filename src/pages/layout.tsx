@@ -1,4 +1,4 @@
-import { FC, ReactNode } from "react"
+import { FC, ReactNode } from 'react'
 
 interface IProps {
   children: ReactNode
@@ -6,8 +6,10 @@ interface IProps {
 
 const RootLayout: FC<IProps> = ({ children }) => {
   return (
-    <div className="w-screen h-screen bg-blue-950 flex justify-center items-center">
-      <div className="w-1/2 h-1/2 bg-white rounded-lg shadow-lg p-8">{children}</div>
+    <div className="flex h-screen w-screen items-center justify-center bg-blue-950 p-12 sm:p-24 md:p-48">
+      <div className=" flex h-full  w-full place-content-center place-items-center rounded-lg bg-white p-8 shadow-lg">
+        {children}
+      </div>
     </div>
   )
 }

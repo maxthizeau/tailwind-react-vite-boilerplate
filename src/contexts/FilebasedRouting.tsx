@@ -1,17 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import React from "react"
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import React from 'react'
+import ErrorFallback from '@/components/ErrorFallback'
+import { ErrorBoundary } from 'react-error-boundary'
 
 // const baseFolder = "./pages"
 
 const FileBasedRoutingContext = React.createContext({})
 export const FileBasedRoutingProvider = () => {
-  const getExplodedFilename = (path: string) => path.split("/")
+  const getExplodedFilename = (path: string) => path.split('/')
 
-  const layouts: Record<string, any> = import.meta.glob("../pages/**/layout.tsx", {
-    eager: true,
-  })
-  const pages: Record<string, any> = import.meta.glob("../pages/**/page.tsx", {
+  const layouts: Record<string, any> = import.meta.glob(
+    '../pages/**/layout.tsx',
+    {
+      eager: true,
+    }
+  )
+  const pages: Record<string, any> = import.meta.glob('../pages/**/page.tsx', {
     eager: true,
   })
 
@@ -41,9 +46,9 @@ export const FileBasedRoutingProvider = () => {
     const layouts = []
 
     for (let i = 0; i <= explodedPath.length; i++) {
-      const path = explodedPath.slice(0, i).join("/")
+      const path = explodedPath.slice(0, i).join('/')
 
-      const layoutFound = findInLayouts(path + "/layout.tsx")
+      const layoutFound = findInLayouts(path + '/layout.tsx')
       if (layoutFound) {
         layouts.push(layoutFound)
       }
@@ -54,21 +59,21 @@ export const FileBasedRoutingProvider = () => {
 
   const routes = []
   for (const path of Object.keys(pages)) {
-    const pathArray = path.split("/").slice(2)
+    const pathArray = path.split('/').slice(2)
     const fileName = pathArray[pathArray.length - 1]
     if (!fileName) {
       continue
     }
 
     const pathArrayWithParams = pathArray.map((x) => {
-      if (x.startsWith("[")) {
+      if (x.startsWith('[')) {
         return `:${x.slice(1, -1)}`
       }
       return x
     })
 
     // with params ([id] => :id) and without last element (page.tsx)
-    const finalPath = "/" + pathArrayWithParams.slice(0, -1).join("/")
+    const finalPath = '/' + pathArrayWithParams.slice(0, -1).join('/')
     const layouts = getNestedLayouts(path)
     const ElementWithLayout = LayoutElement([...layouts, pages[path]])
 
@@ -77,24 +82,23 @@ export const FileBasedRoutingProvider = () => {
       Element: ElementWithLayout,
       loader: pages[path]?.loader,
       action: pages[path]?.action,
-      ErrorBoundary: pages[path]?.ErrorBoundary,
     })
   }
 
   console.log(routes)
 
   const router = createBrowserRouter(
-    routes.map(({ Element, ErrorBoundary, ...rest }) => ({
+    routes.map(({ Element, ...rest }) => ({
       ...rest,
       element: Element,
-
-      ...(ErrorBoundary && { errorElement: <ErrorBoundary /> }),
     }))
   )
 
   return (
     <FileBasedRoutingContext.Provider value={{}}>
-      <RouterProvider router={router} />
+      <ErrorBoundary FallbackComponent={ErrorFallback}>
+        <RouterProvider router={router} />
+      </ErrorBoundary>
     </FileBasedRoutingContext.Provider>
   )
 }
